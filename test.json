@@ -1,13 +1,23 @@
 {
   "userId": "spencercjh",
-  "sign0": "未经篡改未经篡改未经篡改未经篡改",
-  "sign1": "1111111111111111111111111111111111111111111111111111111111111111",
-  "sign2": "证书类型",
-  "sign3": "SHA256",
-  "sign4": "我我我我我我我我我我我我我我我我.doc",
-  "sign5": "1111111111111111111111111111111111111111111111111111111111111111",
-  "sign6": "2018年12月7日",
-  "sign7": "1111111111111111111111111111111111111111111111111111111111111111",
-  "sign8": "1111111111111111111111111111111111111111111111111111111111111111",
-  "sign9": "1111111111111111111111111111111111111111111111111111111111111111"
+  "certificate": {
+    "0": "经链证算法检验数据对象为安全，未经篡改",
+    "1": "y3dP63zF2BYyRBfYBg6ECLUlGkV6usPC",
+    "2": "XXX链证平台",
+    "3": "上链证书",
+    "4": "MD5+SHA512",
+    "5": "基于wkhtmltopdf和PDFBOX的Html转PDF图片工具.git",
+    "6": "cX4MpCXmY5nauwHaZx6WDbXYNDcCU9f9gUjIgkrKaBysviaCgpekvE4Gw7Sf8GV6",
+    "7": "2018年12月9日",
+    "8": "gK4KYq1iBMbEbai0NnZXjmbV2aqUxQXvLGoWrsBYne5KLMLzQ16hHLfB5aW0GCa2",
+    "9": "GVZESwAmsfrR18nbi5vHnX4hqHIfLFXn"
+  },
+  "option": {
+    "margin-bottom": "0",
+    "margin-left": "0",
+    "margin-right": "0",
+    "margin-top": "0",
+    "page-height": "125",
+    "page-width": "88"
+  }
 }

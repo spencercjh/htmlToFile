@@ -1,8 +1,10 @@
 package top.spencercjh;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import top.spencercjh.utils.*;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -27,10 +29,11 @@ public class Html2PdfService {
      *
      * @param pageUrl
      * @return
+     * @throws Exception
      */
-    public String excute(String pageUrl) throws Exception {
+    public String execute(String pageUrl, Map<String, Object> option) throws Exception {
         String outputPath = "/output/" + BaseUtils.getDateStr("yyyyMMdd") + "/pdf/" + BaseUtils.uuid2() + ".pdf";
-        String cmdStr = getCmdStr(pageUrl, outputPath);
+        String cmdStr = getCmdStr(pageUrl, outputPath, option);
         boolean success = CmdUtils.excute(cmdStr);
         if (success) {
             return outputPath;
@@ -38,7 +41,6 @@ public class Html2PdfService {
             if (FilesUtils.isExistNotCreate(outputPath)) {
                 return outputPath;
             } else {
-
                 throw new Exception("转化异常！[" + outputPath + "]");
             }
         }
@@ -51,34 +53,76 @@ public class Html2PdfService {
      * @param outputPath
      * @return
      */
-    private String getCmdStr(String pageUrl, String outputPath) {
-        StringBuilder cmdStr = new StringBuilder();
-        String absoultOutputPath = PathUtils.getClassRootPath(outputPath);
-        FilesUtils.checkFolderAndCreate(Objects.requireNonNull(absoultOutputPath));
-        String absoultExePath = "";
-        if (OsInfo.isWindows()) {//windows系统
-            absoultExePath = getWindowExePath();
-            absoultOutputPath = PathUtils.getWindowsRightPath(absoultOutputPath);
-        } else {//默认linux系统
-            absoultExePath = getLinuxExePath();
-            //需要给脚本授权
-            //cmdStr.append("chmod +x ").append(absoultExePath).append(" && ");
-            CmdUtils.excute("chmod +x " + absoultExePath);
-        }
-        System.out.println("+++++++++++++++++++++++++++++++++++ /" + absoultExePath);
-        if (!OsInfo.isWindows()) {
-            CmdUtils.excute("chmod +x " + "/" + absoultExePath);
-            cmdStr.append("/").append(absoultExePath).append(" --page-width 88 --page-height 125 -B 0 -L 0 -R 0 -T 0 ").append(pageUrl).append(" /").append(absoultOutputPath);
+    private String getCmdStr(String pageUrl, String outputPath, Map<String, Object> parameter) {
+        String option;
+        if (parameter == null) {
+            option = " --page-width 88 --page-height 125 -B 0 -L 0 -R 0 -T 0 ";
         } else {
-            cmdStr.append(absoultExePath).append(" --page-width 88 --page-height 125 -B 0 -L 0 -R 0 -T 0 ").append(pageUrl).append(" ").append(absoultOutputPath);
+            option = dealParameter(parameter);
         }
+        StringBuilder cmdStr = new StringBuilder();
+        String absoluteOutputPath = PathUtils.getClassRootPath(outputPath);
+        FilesUtils.checkFolderAndCreate(Objects.requireNonNull(absoluteOutputPath));
+        String absoluteExePath;
+        if (OsInfo.isWindows()) {
+            absoluteExePath = getWindowExePath();
+            absoluteOutputPath = PathUtils.getWindowsRightPath(absoluteOutputPath);
+            cmdStr.append(absoluteExePath).
+                    append(option).
+                    append(pageUrl).append(" ").append(absoluteOutputPath);
+        } else {
+            absoluteExePath = getLinuxExePath();
+            CmdUtils.excute("chmod +x " + "/" + absoluteExePath);
+            cmdStr.append("/").append(absoluteExePath).
+                    append(option).
+                    append(pageUrl).append(" /").append(absoluteOutputPath);
+        }
+        System.out.println("## CMD STRING " + cmdStr.toString());
         return cmdStr.toString();
     }
 
-    public String getWindowExePath() {
+    private String dealParameter(Map<String, Object> parameter) {
+        StringBuilder stringBuilder = new StringBuilder(" ");
+        if (StringUtils.isNumeric((CharSequence) parameter.get("margin-bottom"))) {
+            stringBuilder.append("-B ").
+                    append(parameter.get("margin-bottom")).
+                    append(" ");
+        }
+        if (StringUtils.isNumeric((CharSequence) parameter.get("margin-left"))) {
+            stringBuilder.append("-L ").
+                    append(parameter.get("margin-left")).
+                    append(" ");
+        }
+        if (StringUtils.isNumeric((CharSequence) parameter.get("margin-right"))) {
+            stringBuilder.append("-R ").
+                    append(parameter.get("margin-right")).
+                    append(" ");
+        }
+        if (StringUtils.isNumeric((CharSequence) parameter.get("margin-top"))) {
+            stringBuilder.append("-T ").
+                    append(parameter.get("margin-top")).
+                    append(" ");
+        }
+        if (StringUtils.isNumeric((CharSequence) parameter.get("page-height"))) {
+            stringBuilder.append("--page-height ").
+                    append(parameter.get("page-height")).
+                    append(" ");
+        }
+        if (StringUtils.isNumeric((CharSequence) parameter.get("page-width"))) {
+            stringBuilder.append("--page-width ").
+                    append(parameter.get("page-width")).
+                    append(" ");
+        }
+        if (parameter.get("lowquality") != null) {
+            stringBuilder.append("--lowquality ");
+        }
+        return stringBuilder.toString();
+    }
+
+    private String getWindowExePath() {
         if (BaseUtils.isBlank(this.windowExePath)) {
-            String absoultExePath = PathUtils.getClassRootPath("/plugin/window/wkhtmltopdf/bin/wkhtmltopdf");
-            this.windowExePath = PathUtils.getWindowsRightPath(absoultExePath);
+            String absoluteExePath = PathUtils.getClassRootPath("/plugin/window/wkhtmltopdf/bin/wkhtmltopdf");
+            this.windowExePath = PathUtils.getWindowsRightPath(absoluteExePath);
         }
         return this.windowExePath;
     }
@@ -87,7 +131,7 @@ public class Html2PdfService {
         this.windowExePath = windowExePath;
     }
 
-    public String getLinuxExePath() {
+    private String getLinuxExePath() {
         if (BaseUtils.isBlank(this.linuxExePath)) {
             this.linuxExePath = PathUtils.getClassRootPath("/plugin/linux/wkhtmltox/bin/wkhtmltopdf");
         }

@@ -2,13 +2,13 @@ package top.spencercjh.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import top.spencercjh.Html2PdfService;
-import top.spencercjh.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import top.spencercjh.Html2PdfService;
+import top.spencercjh.utils.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,7 +53,7 @@ public class TemplateController {
         String writerStr = new String(stringBuilder.toString().getBytes(), StandardCharsets.UTF_8);
         String htmlOutPath = "output/" + BaseUtils.getDateStr("yyyyMMdd") + "/html/cert_" + userId + ".html";
         htmlOutPath = PathUtils.getClassRootPath(htmlOutPath);
-        if(!OsInfo.isWindows()) {
+        if (!OsInfo.isWindows()) {
             htmlOutPath = "/" + htmlOutPath;
         }
         FilesUtils.checkFolderAndCreate(Objects.requireNonNull(htmlOutPath));
@@ -66,39 +66,23 @@ public class TemplateController {
     public Map<String, String> getCert(@RequestParam("data") String data) throws IOException {
         JSONObject jsonObject = JSON.parseObject(data);
         String userId = jsonObject.getString("userId");
-        String sign0 = jsonObject.getString("sign0");
-        String sign1 = jsonObject.getString("sign1");
-        String sign2 = jsonObject.getString("sign2");
-        String sign3 = jsonObject.getString("sign3");
-        String sign4 = jsonObject.getString("sign4");
-        String sign5 = jsonObject.getString("sign5");
-        String sign6 = jsonObject.getString("sign6");
-        String sign7 = jsonObject.getString("sign7");
-        String sign8 = jsonObject.getString("sign8");
-        String sign9 = jsonObject.getString("sign9");
-        List<String> dataList = new ArrayList<>(16);
-        dataList.add(sign0);
-        dataList.add(sign1);
-        dataList.add(sign2);
-        dataList.add(sign3);
-        dataList.add(sign4);
-        dataList.add(sign5);
-        dataList.add(sign6);
-        dataList.add(sign7);
-        dataList.add(sign8);
-        dataList.add(sign9);
+        Map<String, Object> certificate = jsonObject.getJSONObject("certificate");
+        List<String> dataList = new ArrayList<>(certificate.size());
+        Map<String, Object> option = jsonObject.getJSONObject("option");
+        for (Map.Entry<String, Object> entry : certificate.entrySet()) {
+            dataList.add((String) entry.getValue());
+        }
         String htmlInputPath = PathUtils.getClassRootPath("/static/template.html");
-        if(!OsInfo.isWindows()){
+        if (!OsInfo.isWindows()) {
             htmlInputPath = "/" + htmlInputPath;
         }
-        System.out.println("##########################" + htmlInputPath);
-
+        System.out.println("## HTML INPUT PATH" + htmlInputPath);
         String htmlOutPath = fillDataToHtml(userId, htmlInputPath, dataList);
         Map<String, String> result = new HashMap<>(2);
         try {
-            String originPdfPath = html2PdfService.excute(htmlOutPath);
+            String originPdfPath = html2PdfService.execute(htmlOutPath, option);
             result.put("pdfPath", originPdfPath);
-            result.put("imagePath",Pdf2PngUtils.pdf2png(PathUtils.getClassRootPath(originPdfPath)));
+            result.put("imagePath", Pdf2PngUtils.pdf2png(PathUtils.getClassRootPath(originPdfPath)));
         } catch (Exception e) {
             e.printStackTrace();
         }

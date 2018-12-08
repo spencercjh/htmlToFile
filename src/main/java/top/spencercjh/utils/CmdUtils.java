@@ -19,7 +19,7 @@ public class CmdUtils {
         // 利用Runtime输出流读取
         Runtime rt = Runtime.getRuntime();
         try {
-            System.out.println("Command：" + cmdStr);
+            System.out.println("## Command：" + cmdStr);
             Process p = rt.exec(cmdStr);
             StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(),
                     "ERROR");
