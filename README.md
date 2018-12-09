@@ -41,7 +41,8 @@
     }
    
 - 说明：certificate对应template.html上的10个需要替换的字段，option是要拼接到指令中的参数Key和Value，
-单位为毫米mm。
+单位为毫米mm。margin-bottom:设置页面底部边距;margin-left:设置页面左边距（默认为10mm）;margin-right:
+设置页面右边距（默认为10mm）;margin-top:	设置页面上边距;page-height:页面高度;page-width:页面宽度;
 - Response:
     ```json
       {

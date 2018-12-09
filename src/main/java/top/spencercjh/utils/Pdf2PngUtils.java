@@ -21,49 +21,41 @@ public class Pdf2PngUtils {
      *
      * @param pdfFilePath pdf文件地址
      */
-    public static String pdf2png(String pdfFilePath) {
-        if (!OsInfo.isWindows()) {
-            pdfFilePath = "/" + pdfFilePath;
-        }
+    public static String pdf2png(String pdfFilePath, String imagePath) throws IOException {
         System.out.println("## PDF FILE PATH" + pdfFilePath);
         File file = new File(pdfFilePath);
-        try {
+        try (PDDocument doc = PDDocument.load(file)) {
             if (!file.exists()) {
                 throw new IOException("PDF文件不存在");
             }
-            PDDocument doc = PDDocument.load(file);
             PDFRenderer renderer = new PDFRenderer(doc);
             int pageCount = doc.getNumberOfPages();
             if (pageCount == 1) {
-                String path = "/output/" + BaseUtils.getDateStr("yyyyMMdd") +
-                        "/image/" + BaseUtils.uuid2() + ".png";
+                String path = imagePath + BaseUtils.getDateStr("yyyyMMdd") +
+                        "/" + BaseUtils.uuid2() + ".png";
                 BufferedImage image = renderer.renderImageWithDPI(0, 144);
-                write(image, renderer, path);
+                write(image, path);
                 return path;
             } else {
                 List<String> pathList = new ArrayList<>(16);
                 for (int i = 0; i < pageCount; ++i) {
-                    String path = "/output/" + BaseUtils.getDateStr("yyyyMMdd") +
-                            "/image/" + BaseUtils.uuid2() + "_" + i + ".png";
+                    String path = imagePath + BaseUtils.getDateStr("yyyyMMdd") +
+                            "/" + BaseUtils.uuid2() + "_" + i + ".png";
                     BufferedImage image = renderer.renderImageWithDPI(i, 144);
-                    write(image, renderer, path);
+                    write(image, path);
                     pathList.add(path);
                 }
                 return JSON.toJSONString(pathList);
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            throw new IOException("PDF转图片失败");
         }
     }
 
-    private static void write(BufferedImage image, PDFRenderer renderer, String path) throws IOException {
-        String imageFilePath = PathUtils.getClassRootPath(path);
-        if (!OsInfo.isWindows()) {
-            imageFilePath = "/" + imageFilePath;
-        }
-        FilesUtils.checkFolderAndCreate(Objects.requireNonNull(imageFilePath));
-        System.out.println("## IMAGE FILE PATH" + imageFilePath);
-        ImageIO.write(image, "png", new File(imageFilePath));
+    private static void write(BufferedImage image, String path) throws IOException {
+        FilesUtils.checkFolderAndCreate(Objects.requireNonNull(path));
+        System.out.println("## IMAGE FILE PATH" + path);
+        ImageIO.write(image, "png", new File(path));
     }
 }

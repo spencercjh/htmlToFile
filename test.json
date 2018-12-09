@@ -1,17 +1,17 @@
 {
   "userId": "spencercjh",
-  "certificate": {
-    "0": "经链证算法检验数据对象为安全，未经篡改",
-    "1": "y3dP63zF2BYyRBfYBg6ECLUlGkV6usPC",
-    "2": "XXX链证平台",
-    "3": "上链证书",
-    "4": "MD5+SHA512",
-    "5": "基于wkhtmltopdf和PDFBOX的Html转PDF图片工具.git",
-    "6": "cX4MpCXmY5nauwHaZx6WDbXYNDcCU9f9gUjIgkrKaBysviaCgpekvE4Gw7Sf8GV6",
-    "7": "2018年12月9日",
-    "8": "gK4KYq1iBMbEbai0NnZXjmbV2aqUxQXvLGoWrsBYne5KLMLzQ16hHLfB5aW0GCa2",
-    "9": "GVZESwAmsfrR18nbi5vHnX4hqHIfLFXn"
-  },
+  "certificate": [
+    "经链证算法检验数据对象为安全，未经篡改",
+    "y3dP63zF2BYyRBfYBg6ECLUlGkV6usPC",
+    "XXX链证平台",
+    "上链证书",
+    "MD5+SHA512",
+    "基于wkhtmltopdf和PDFBOX的Html转PDF图片工具.git",
+    "cX4MpCXmY5nauwHaZx6WDbXYNDcCU9f9gUjIgkrKaBysviaCgpekvE4Gw7Sf8GV6",
+    "2018年12月9日",
+    "gK4KYq1iBMbEbai0NnZXjmbV2aqUxQXvLGoWrsBYne5KLMLzQ16hHLfB5aW0GCa2",
+    "GVZESwAmsfrR18nbi5vHnX4hqHIfLFXn"
+  ],
   "option": {
     "margin-bottom": "0",
     "margin-left": "0",

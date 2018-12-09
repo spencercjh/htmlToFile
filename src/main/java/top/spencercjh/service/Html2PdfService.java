@@ -1,6 +1,8 @@
-package top.spencercjh;
+package top.spencercjh.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import top.spencercjh.utils.*;
 
@@ -15,6 +17,7 @@ import java.util.Objects;
  */
 @Service
 public class Html2PdfService {
+    private final Environment env;
     /**
      * windows执行文件
      */
@@ -24,6 +27,11 @@ public class Html2PdfService {
      */
     private String linuxExePath;
 
+    @Autowired
+    public Html2PdfService(Environment env) {
+        this.env = env;
+    }
+
     /**
      * 解析生成PDF
      *
@@ -32,7 +40,10 @@ public class Html2PdfService {
      * @throws Exception
      */
     public String execute(String pageUrl, Map<String, Object> option) throws Exception {
-        String outputPath = "/output/" + BaseUtils.getDateStr("yyyyMMdd") + "/pdf/" + BaseUtils.uuid2() + ".pdf";
+        String outputPath = OsInfo.isWindows() ? env.getProperty("windows-output-pdf-path") +
+                BaseUtils.getDateStr("yyyyMMdd") + "/" + BaseUtils.uuid2() + ".pdf" :
+                env.getProperty("linux-output-pdf-path") + BaseUtils.getDateStr("yyyyMMdd") +
+                        "/" + BaseUtils.uuid2() + ".pdf";
         String cmdStr = getCmdStr(pageUrl, outputPath, option);
         boolean success = CmdUtils.excute(cmdStr);
         if (success) {
@@ -61,7 +72,7 @@ public class Html2PdfService {
             option = dealParameter(parameter);
         }
         StringBuilder cmdStr = new StringBuilder();
-        String absoluteOutputPath = PathUtils.getClassRootPath(outputPath);
+        String absoluteOutputPath = outputPath;
         FilesUtils.checkFolderAndCreate(Objects.requireNonNull(absoluteOutputPath));
         String absoluteExePath;
         if (OsInfo.isWindows()) {
@@ -72,10 +83,10 @@ public class Html2PdfService {
                     append(pageUrl).append(" ").append(absoluteOutputPath);
         } else {
             absoluteExePath = getLinuxExePath();
-            CmdUtils.excute("chmod +x " + "/" + absoluteExePath);
-            cmdStr.append("/").append(absoluteExePath).
+            CmdUtils.excute("chmod +x " + absoluteExePath);
+            cmdStr.append(absoluteExePath).
                     append(option).
-                    append(pageUrl).append(" /").append(absoluteOutputPath);
+                    append(pageUrl).append(" ").append(absoluteOutputPath);
         }
         System.out.println("## CMD STRING " + cmdStr.toString());
         return cmdStr.toString();
@@ -120,11 +131,7 @@ public class Html2PdfService {
     }
 
     private String getWindowExePath() {
-        if (BaseUtils.isBlank(this.windowExePath)) {
-            String absoluteExePath = PathUtils.getClassRootPath("/plugin/window/wkhtmltopdf/bin/wkhtmltopdf");
-            this.windowExePath = PathUtils.getWindowsRightPath(absoluteExePath);
-        }
-        return this.windowExePath;
+        return env.getProperty("windows-plugin-path");
     }
 
     public void setWindowExePath(String windowExePath) {
@@ -132,10 +139,7 @@ public class Html2PdfService {
     }
 
     private String getLinuxExePath() {
-        if (BaseUtils.isBlank(this.linuxExePath)) {
-            this.linuxExePath = PathUtils.getClassRootPath("/plugin/linux/wkhtmltox/bin/wkhtmltopdf");
-        }
-        return this.linuxExePath;
+        return env.getProperty("linux-plugin-path");
     }
 
     public void setLinuxExePath(String linuxExePath) {
