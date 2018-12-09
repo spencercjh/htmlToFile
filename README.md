@@ -2,7 +2,7 @@
 
 ## 项目说明
 
-参考自https://github.com/petterobam/my-html2file，修正其不能在linux内正常使用的问题（原项目的LinuxPath并不正确），
+项目参考自[参考链接](https://github.com/petterobam/my-html2file)，修正其不能在linux内正常使用的问题（原项目的LinuxPath并不正确），
 并使用Apache PdfBox将生成出来的PDF文件转化为PNG图片，以解决用wkhtmltoimage生成出来的图片过大的问题。
 即通过转PDF省去一步图片压缩的任务，而PDF又正好是业务需要的。使用字符串拼接，帮助用户拼接wkhtmltopdf需要
 的参数指令，避免不必要的麻烦。
