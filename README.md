@@ -15,7 +15,7 @@ _/html2file/plugin_ wkhtmltox的位置，pdf就是靠调用它生成出来的
 
 _/html2file/html /html2file/image /html2file/pdf_ 生成的3种文件存放目录
 
-_description.html_是一份以_wkhtmltopdf--helpdoc_ 的方式导出的说明文档。
+_description.html_ 是一份以 _wkhtmltopdf--helpdoc_ 的方式导出的说明文档。
 
 _src/main/java/top/spencercjh/controller#getCert(String data)_ 具体写了我需要的业务逻辑
 
@@ -51,6 +51,7 @@ _top.spencercjh.config.WebConfig_ 中配置了filter，允许用户能够访问�
                 "page-width": "88"
           }
     }
+  ```
    
 - 说明：certificate对应template.html上的10个需要替换的字段，option是要拼接到指令中的参数Key和Value，
 单位为毫米mm。
