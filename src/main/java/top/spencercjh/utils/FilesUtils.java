@@ -438,20 +438,15 @@ public class FilesUtils {
      * @param absoultOutputFilePath
      * @return
      */
-    public static boolean checkFolderAndCreate(String absoultOutputFilePath) {
-        int index = absoultOutputFilePath.lastIndexOf("/");
-        if (index > 0) {
-            String dirPath = absoultOutputFilePath.substring(0, index);
-            File file = new File(dirPath);
-            int i = 0;
-            while (!file.exists()) {
-                file.mkdirs();
-                if (i++ > 100) {
-                    return false;
-                }
+    public static void checkFolderAndCreate(String absoultOutputFilePath) {
+        File file = new File(absoultOutputFilePath);
+        if (!file.isFile()) {
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
             }
+        } else {
+            file.exists();
         }
-        return true;
     }
 
     /**
